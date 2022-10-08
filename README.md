@@ -1,3 +1,3 @@
-# YAET2
+# Optimism Tooling
 
-Yet Another EVM Tool(2)
+Simple no nonsense tooling for Optimism
