@@ -1,10 +1,8 @@
-import Grid from '@mui/material/Grid';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import {useEffect, useState, useCallback} from 'react';
 import {ethers} from 'ethers';
 import {useLocalStorage} from './hooks/useLocalStorage';
 import {useParams} from 'react-router-dom';
+import {Avatar, CardHeader, Link, Grid, Typography, Tooltip} from '@mui/material';
 
 import ENSAbi from './abi/ENS.json';
 import ERC20Abi from './abi/ERC20.json';
@@ -17,13 +15,10 @@ import UniswapV3Abi from './abi/UniswapV3.json';
 import WETHAbi from './abi/WETH.json';
 
 import './StackTraceViewer.css';
+import logo from './logo.png';
 
 const RPC_URL = 'https://opt-mainnet.g.alchemy.com/v2/D1Feqixbv9g-dwtyIzy7Bg6jiQRKgVJd';
 const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-
-// Test txHash
-// 0xb152114d7c6ceb3593d2d3c170463fc516438a91691122afb8d8b49b865c025e
-// 0x300f2e8b26466773271ab54cdd3cbccc84d83895b482897db701adae1ede2e0a
 
 // Common ABIs
 const ABIS = [
@@ -111,11 +106,13 @@ function StackTraceTreeViewer(stackTrace) {
   const prettyValueStr =
     prettyValue === null ? '' : `ETH: ${ethers.utils.formatEther(prettyValue)}`;
 
+  const prettyGas = parseInt(gas, 16);
+
   return (
-    <li key={`${parseInt(gas, 16).toString()}`}>
+    <li key={`${isNaN(prettyGas) ? '0' : prettyGas.toString()}`}>
       <details open>
         <summary>
-          [{parseInt(gas, 16)}] {prettyValueStr} [{type}]{' '}
+          [{isNaN(prettyGas) ? '0' : prettyGas.toString()}] {prettyValueStr} [{type}]{' '}
           <Tooltip title={to} placement="top-start">
             <a href={`https://optimistic.etherscan.io/address/${to}`}>
               {prettyAddress || to}::{prettyInput || input}
@@ -129,8 +126,16 @@ function StackTraceTreeViewer(stackTrace) {
               return [{prettyOutput || output}]
             </li>
           )}
+          {
+            // Sending ETH doesn't return value it seems
+            output === undefined && error === undefined && (
+              <li key={`return-${parseInt(gas, 16).toString()}`}>return [0x]</li>
+            )
+          }
           {error !== undefined && (
-            <li className="error-li" key={`revert-${parseInt(gas, 16).toString()}`}>reverted [{error}]</li>
+            <li className="error-li" key={`revert-${parseInt(gas, 16).toString()}`}>
+              reverted [{error}]
+            </li>
           )}
         </ul>
       </details>
@@ -191,7 +196,6 @@ function formatTraceTree(decoder, knownContractAddresses, stackTrace) {
     try {
       const bn = ethers.BigNumber.from(stackTrace.value);
       if (bn.gt(ethers.constants.Zero)) {
-        console.log('prettyValue', prettyValue);
         prettyValue = bn;
       }
     } catch (e) {}
@@ -347,9 +351,18 @@ function App() {
       <Grid container spacing={1}>
         <Grid item xs={1}></Grid>
         <Grid item xs={10}>
-          <Typography variant="h2" component="h2">
-            Transaction Trace
-          </Typography>
+          <CardHeader
+            avatar={
+              <Link href="/">
+                <Avatar alt="logo" src={logo} />
+              </Link>
+            }
+            title={
+              <Typography variant="h4" component="h4">
+                Transaction Trace
+              </Typography>
+            }
+          />
           {callData === null && isValidTxHash && 'Loading...'}
           {callData === null && !isValidTxHash && 'Invalid tx hash provided'}
           {
