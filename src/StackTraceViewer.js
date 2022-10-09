@@ -16,9 +16,7 @@ import WETHAbi from './abi/WETH.json';
 
 import './StackTraceViewer.css';
 import logo from './logo.png';
-
-const RPC_URL = 'https://opt-mainnet.g.alchemy.com/v2/D1Feqixbv9g-dwtyIzy7Bg6jiQRKgVJd';
-const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+import {provider, sleep} from './constants';
 
 // Common ABIs
 const ABIS = [
@@ -35,11 +33,6 @@ const ABIS = [
 
 // Default decoder with common abis
 let defaultDecoder = new ethers.utils.Interface(ABIS);
-
-// Sleep!
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 // Extract out all function signatures (4bytes)
 function getUnknownFunctionSignatures(decoder, stackTrace) {
@@ -342,7 +335,6 @@ function App() {
     if (decoder !== null && callData === null && txhash !== undefined && !parsed) {
       getStackTrace();
     }
-    // setTimeout(() => gimmie(), 1000)
   }, [decoder, callData, customTextSignatures, parsed, getStackTrace, txhash]);
 
   return (
@@ -386,3 +378,11 @@ function App() {
 }
 
 export default App;
+
+export {
+  defaultDecoder,
+  StackTraceTreeViewer,
+  formatTraceTree,
+  getUniqueUnknownAddresses,
+  getUniqueUnkownFunctionSignatures,
+};
