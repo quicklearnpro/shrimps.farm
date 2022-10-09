@@ -16,7 +16,9 @@ const MAX_SLOT_ITER = 400;
 const findBalanceAndApprovalSlot = async (tokenAddress, rpcUrl) => {
   // evm_setAccountStorageAt
   // eth_getStorageAt
-  const provider = new ethers.providers.Web3Provider(ganache.provider({fork: {url: rpcUrl}}));
+  const provider = new ethers.providers.Web3Provider(
+    ganache.provider({wallet: {defaultBalance: 0}, fork: {url: rpcUrl}})
+  );
   const token = new ethers.Contract(tokenAddress, erc20Abi, provider);
 
   // Randomly create a wallet lol
