@@ -185,7 +185,7 @@ function App() {
       </Grid>
 
       <div style={{paddingTop: '50px'}} />
-
+{/* 
       <Grid container spacing={1}>
         <Grid item xs={1}></Grid>
         <Grid item xs={10}>
@@ -282,7 +282,7 @@ const approveStorage = ethers.utils.solidityKeccak256(
           </Paper>
         </Grid>
         <Grid item xs={1}></Grid>
-      </Grid>
+      </Grid> */}
       <div style={{paddingBottom: '30px'}} />
     </>
   );
