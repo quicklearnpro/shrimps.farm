@@ -240,10 +240,15 @@ function App() {
       unknown4s.map(x =>
         fetch(`https://www.4byte.directory/api/v1/signatures/?format=json&hex_signature=${x}`, {
           method: 'GET',
-        }).then(x => x.json())
+        })
+          .then(x => x.json())
+          .catch(() => null)
       )
     );
-    const hexSigsResFlattened = hexSigsRes.map(x => x.results).flat();
+    const hexSigsResFlattened = hexSigsRes
+      .filter(x => x !== null)
+      .map(x => x.results)
+      .flat();
     const textSignatures = hexSigsResFlattened.map(x => 'function ' + x.text_signature);
 
     // Save to localStorage
